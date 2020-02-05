@@ -1,3 +1,7 @@
+// Main javascript file
+// served for all pages
+
+// Hide top bar when scrolling down and show it again when scrolling up
 $(function () {
   var lastScrollTop = 0;
   var $navbar = $('.navbar');

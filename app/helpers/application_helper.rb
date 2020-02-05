@@ -1,4 +1,5 @@
-# Helper function accessable in all views
+# Helper functions made here are accessable in all views
+# for example, app_name is now accessable to all views
 module ApplicationHelper
     def app_name
         conf = app_config
