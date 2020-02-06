@@ -18,7 +18,7 @@ This rails 6 template will give you a good starting point when working on softwa
 
 Devise
 
-Devise is a user authenitification system for ruby on rails designed around another program called warden. You will not need to change anything regarding its settings unless you are changing login behavior, which is unlikely.
+Devise is a user authentication system for ruby on rails designed around another program called warden. You will not need to change anything regarding its settings unless you are changing login behavior, which is unlikely.
 
 To make a page not require login, add skip_before_action :authenticate_user! on top of the controller. To limit it to specific methods of a controller, tack on only: ['method_name'] at the end of the line. You can add more than one method.
 Bootstrap
