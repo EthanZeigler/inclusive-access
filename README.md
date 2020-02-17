@@ -1,6 +1,72 @@
 # README
 
-## Pasted from index file of template.
+# SE Rails starter
+
+### Known issue
+If you see this...
+
+`/Users/ethanzeigler/.rvm/gems/ruby-2.7.0@rails6/gems/activemodel-6.0.2.1/lib/active_model/type/value.rb:8: warning: The called method ``initialize' is defined here`
+
+You're fine. It's actually an issue with rails' code itself that they need to fix. You can ignore it without issue.
+
+## Development Setup
+
+### Install Ruby on Rails & PostgreSQL for your machine:
+Ruby (2.7.0) & Rails (6.0.2.1): 
+https://gorails.com/setup/
+
+> **TCNJ students using a VM:** In the installruby.sh file, change the ruby and rails versions accordingly!
+
+### Install this repository: 
+
+`git clone https://github.com/TCNJSwEngg/SE-Rails-starter.git`
+
+***IF YOU DO NOT USE GIT CLONE, THE ENTIRE GIT SYSTEM WILL BREAK! USE CLONE!***
+
+
+Once cloned, navigate to the servd/code directory and install the project dependencies. 
+
+`bundle install`
+`yarn install`
+
+If you encounter errors, try restarting PostgreSQL and installing additional updates.
+
+For CentOS:
+```sh
+$ systemctl restart postgresql-9.6
+$ sudo yum install postgresql96-libs
+$ sudo yum install postgresql96-devel
+```
+For MacOS:
+```sh
+$ pg_ctl -D /usr/local/var/postgres start
+   ```
+> **TCNJ NOTE:** If issues continue, there's something wrong with your psql installation.
+
+PLease run the following. `sudo yum install postgresql-libs postgresql-devel`
+
+If the still continue, look up the error you're receiving for more advice.
+
+### Create the databases and perform migration:
+
+    rake db:create
+    rake db:migrate:reset
+    rake db:migrate
+    rake db:seed
+
+### Finally, run the app.
+Find the correct binding for your VM if you're using one. Use the `--binding` flag or you won't be able to view the site from your browser due to the way the HPC handles VM connections.
+
+`rails s (or rails server) --binding xxx.xxx.xxx.xxx`
+
+The app should be available in the browser at [localhost:3000](localhost:3000).
+
+### Administration
+
+To access the admin interface, go to the /admin page. It's powered by rails admin. (A remake of django-admin)
+
+
+# Pasted help information from index file of template.
 Home#index
 
 Find me at app/views/home/index.html.erb. Make sure to clear out the file before you start working. The other files, _erb, _mvc, _filetree can be deleted.
