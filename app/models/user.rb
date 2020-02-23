@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Represents a user of the web application
 class User < ApplicationRecord
   # Devise is a premade system for managing logins

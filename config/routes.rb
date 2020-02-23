@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 # This file tells the Rails server how incoming requests are sent to which
 # controller and method.
-# 
-# 
+#
+#
 # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
 Rails.application.routes.draw do
@@ -30,7 +32,4 @@ Rails.application.routes.draw do
   # # than rails would assume by the name. to: 'controller#method_name'.
   # # It would have extected to: 'add_tags#add', which would fail
   # put '/add_tags/add', to: 'users#add_tags'
-  
-
-  
 end

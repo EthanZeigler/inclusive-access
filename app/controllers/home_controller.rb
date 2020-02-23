@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Controller for the home page already made for you
 class HomeController < ApplicationController
   # No sign in needed to access these pages
@@ -13,9 +15,7 @@ class HomeController < ApplicationController
   # Find me @ app/views/home/index.html.erb
   #
   # Also, any local variable made inside this method will also exist
-  # in the view to be displayed. Do not look up information within the 
+  # in the view to be displayed. Do not look up information within the
   # view itself. Do it here, please!
-  def index
-  end
-
+  def index; end
 end
