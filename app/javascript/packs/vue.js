@@ -7,18 +7,22 @@
 
 import Vue from 'vue';
 import App from '../app/app.vue';
-import Router from '../app/router';
+import router from '../app/router';
 
-import VueRouter from "vue-router";
-Vue.use(VueRouter);
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+import { BootstrapVue } from 'bootstrap-vue';
+Vue.use(BootstrapVue);
 
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new Vue({
-        el: '#app-spa',
-        render: h => h(App),
-        Router
-    }).$mount();
-    //document.body.appendChild(app.$el);
+    if (document.getElementById('app-spa') !== null) {
+        const app = new Vue({
+            el: '#app-spa',
+            render: h => h(App),
+            router
+        }).$mount();
+    }
 });
 
 

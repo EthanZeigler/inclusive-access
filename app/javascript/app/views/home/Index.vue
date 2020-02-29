@@ -1,6 +1,6 @@
 <template>
     <div>
-        Hello world! This is / :)
+        Hello! I am / :)
     </div>
 </template>
 
