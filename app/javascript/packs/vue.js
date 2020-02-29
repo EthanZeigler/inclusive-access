@@ -9,10 +9,14 @@ import Vue from 'vue';
 import App from '../app/app.vue';
 import router from '../app/router';
 
-import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import { BootstrapVue } from 'bootstrap-vue';
+
+import VueLayers from 'vuelayers';
+import 'vuelayers/lib/style.css';
+
+Vue.use(VueLayers);
 Vue.use(BootstrapVue);
 
 document.addEventListener('DOMContentLoaded', () => {
