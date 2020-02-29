@@ -67,7 +67,7 @@
                  BAD HACK!!!!!!!!!!!!!!!
 
                  Seemingly, drawend is fired before the feature array is updated.
-                 We have to wait for a change, probably.
+                 We have to wait for a change, probably. So let's do that. Probably.
                 */
                 let cur = vector.getSource().getFeatures().length;
                 console.log(draw);

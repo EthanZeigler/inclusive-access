@@ -6,14 +6,12 @@
   <%= csp_meta_tag %>
 
   <%= stylesheet_link_tag 'application', media: 'all' %>
-  <%= javascript_pack_tag 'application' %>
-  <%= javascript_pack_tag 'vue' %>
   <%= stylesheet_pack_tag 'vue' %>
 </head>
 
 <body>
 <%# Navigation Bar %>
-<nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+<nav class="navbar navbar-expand-md navbar-light bg-light">
   <a class="navbar-brand" href="#">Inclusive Access</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
           aria-expanded="false" aria-label="Toggle navigation">
@@ -66,5 +64,8 @@
 </nav>
 
 <%= yield %>
+
+<%= javascript_pack_tag 'application' %>
+<%= javascript_pack_tag 'vue' %>
 </body>
 </html>
