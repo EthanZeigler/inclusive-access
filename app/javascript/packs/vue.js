@@ -7,12 +7,18 @@
 
 import Vue from 'vue';
 import App from '../app/app.vue';
+import Router from '../app/router';
+
+import VueRouter from "vue-router";
+Vue.use(VueRouter);
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = new Vue({
-        render: h => h(App)
+        el: '#app-spa',
+        render: h => h(App),
+        Router
     }).$mount();
-    document.body.appendChild(app.$el);
+    //document.body.appendChild(app.$el);
 });
 
 
