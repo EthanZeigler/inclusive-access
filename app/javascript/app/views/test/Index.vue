@@ -2,62 +2,86 @@
     <div>
         <p>Hello! I am <i>not</i> /! :)</p>
 
-        <vl-map :load-tiles-while-animating="true" :load-tiles-while-interacting="true" style="height: 400px" ref="map">
-            <vl-view :zoom.sync="zoom" :center.sync="center" :rotation.sync="rotation"></vl-view>
-
-            <vl-layer-tile id="osm">
-                <vl-source-osm></vl-source-osm>
-            </vl-layer-tile>
-        </vl-map>
+        <div id="map"></div>
     </div>
 </template>
+<style>
+    #map {
+        height: 400px;
+    }
+</style>
 
 <script>
-    import {
-        Vector as VectorLayer
-    } from 'ol/layer';
-    import {
-        Vector as VectorSource
-    } from 'ol/source';
-    import Draw from "ol/interaction/Draw";
+    import Map from 'ol/Map.js';
+    import View from 'ol/View.js';
+    import Polygon from 'ol/geom/Polygon.js';
+    import Draw, {createRegularPolygon, createBox} from 'ol/interaction/Draw.js';
+    import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
+    import {OSM, Vector as VectorSource} from 'ol/source.js';
+    import 'ol/ol.css';
 
     export default {
         data() {
             return {
-                zoom: 2,
-                center: [0, 0],
-                rotation: 0,
             }
         },
         methods: {
-            async setup() {
-                // delay until the map is ready
-                while (typeof this.$refs.map.$map === 'undefined') {
-                    await new Promise(r => setTimeout(r, 100));
-                }
+        },
+        mounted() {
+            //this.setup();
+            var raster = new TileLayer({
+                source: new OSM()
+            });
 
-                let map = this.$refs.map.$map;
-                console.log(map);
+            var source = new VectorSource({wrapX: false});
 
-                var source = new VectorSource({
-                    wrapX: false
-                });
+            var vector = new VectorLayer({
+                source: source
+            });
 
-                var vector = new VectorLayer({
-                    source: source
-                });
+            var map = new Map({
+                layers: [raster, vector],
+                target: 'map',
+                view: new View({
+                    center: [-11000000, 4600000],
+                    zoom: 4
+                })
+            });
 
+            var draw; // global so we can remove it later
+            function addInteraction() {
                 var geometryFunction;
-                var draw = new Draw({
+                draw = new Draw({
                     source: source,
                     type: 'Circle',
                     geometryFunction: geometryFunction
                 });
                 map.addInteraction(draw);
             }
-        },
-        mounted() {
-            this.setup();
+
+            addInteraction();
+
+            draw.on('drawend', async () => {
+                /*
+                 WARNING: HACK!!!!!!!!!!!
+                 BAD HACK!!!!!!!!!!!!!!!
+
+                 Seemingly, drawend is fired before the feature array is updated.
+                 We have to wait for a change, probably.
+                */
+                let cur = vector.getSource().getFeatures().length;
+                console.log(draw);
+                let tries = 0;
+                while (vector.getSource().getFeatures().length === cur &&
+                    tries <= 40) {
+                    await new Promise(r => setTimeout(r, 25));
+                    tries++;
+                }
+                let features = vector.getSource().getFeatures();
+                let feature = features[features.length - 1];
+                console.log(feature);
+                console.log(feature.values_.geometry.getRadius());
+            });
         }
     }
 </script>
