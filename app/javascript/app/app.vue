@@ -33,7 +33,7 @@
 
                     const url = new URL(target.href)
                     const to = url.pathname
-                    if (window.location.pathname !== to && event.preventDefault) {
+                    if (window.location.pathname !== to && target.href.indexOf("/users/", 0) === -1 && event.preventDefault) {
                         event.preventDefault()
                         this.$router.push(to)
                     }

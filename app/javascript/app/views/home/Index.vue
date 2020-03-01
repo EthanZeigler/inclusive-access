@@ -15,7 +15,7 @@
                         Create Location
                     </router-link>
                     <span v-else>
-                        <a href="/user/sign_in">Log in</a> to create a location.
+                        <a href="/users/sign_in">Log in</a> to create a location.
                     </span>
                 </p>
 
