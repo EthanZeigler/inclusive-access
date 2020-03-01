@@ -29,6 +29,7 @@ class MarksController < ApplicationController
   # POST /marks.json
   def create
     @mark = Mark.new(mark_params)
+    @mark.user = current_user
 
     respond_to do |format|
       if @mark.save
