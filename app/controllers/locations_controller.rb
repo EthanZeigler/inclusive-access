@@ -32,7 +32,7 @@ class LocationsController < ApplicationController
   # POST /locations.json
   def create
     @location = Location.new(location_params)
-
+    @location.user = current_user
     respond_to do |format|
       if @location.save
         format.html { redirect_to @location, notice: 'Location was successfully created.' }
@@ -76,8 +76,6 @@ class LocationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def location_params
-      prompt = params.require(:location).permit(:name, :description, :lat, :lat, :long, :radius, :user_id, :search_term)
-      prompt[:location][:user_id] = current_user.id
-      prompt
+      params.require(:location).permit(:name, :description, :lat, :lat, :long, :radius)
     end
 end

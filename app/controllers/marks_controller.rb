@@ -25,7 +25,7 @@ class MarksController < ApplicationController
   # POST /marks.json
   def create
     @mark = Mark.new(mark_params)
-
+    @mark.user = current_user
     respond_to do |format|
       if @mark.save
         format.html { redirect_to @mark, notice: 'Mark was successfully created.' }
@@ -69,6 +69,6 @@ class MarksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def mark_params
-      params.require(:mark).permit(:name, :mark_type_id, :description, :lat, :long, :user_id)
+      params.require(:mark).permit(:name, :mark_type_id, :description, :lat, :long)
     end
 end
