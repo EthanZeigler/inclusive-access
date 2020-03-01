@@ -4,16 +4,12 @@ class LocationsController < ApplicationController
   # GET /locations
   # GET /locations.json
   def index
-    @locations = Location.all
-  end
-
-  def search
     @locations = if params[:search_term]
-      Location.search(params[:search_term])
+                   Location.search(params[:search_term])
                  else
-      Location.all
+                   Location.all
                  end
-    end
+  end
 
   # GET /locations/1
   # GET /locations/1.json

@@ -3,6 +3,6 @@ class Location < ApplicationRecord
   has_many :marks
 
   def self.search(search)
-    where('content LIKE ? OR content LIKE ?', "%#{search}%")
+    where('name LIKE ? OR description LIKE ?', "%#{search}%", "%#{search}%")
   end
 end
