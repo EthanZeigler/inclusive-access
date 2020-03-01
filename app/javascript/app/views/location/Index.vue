@@ -13,12 +13,15 @@
                 <p v-else>Log in to add markers to the map.</p>
 
                 <div v-if="!editing">
-                    <p v-for="mark in marks" :key="'mark-loc-' + location.id + '-' + mark.id">
-                        <a href="#" @click.prevent="showPopup(mark)">
-                            [{{ getMarkType(mark) }}]
-                            {{ mark.name }}
-                        </a>
-                    </p>
+                    <ul class="pl-4" v-if="marks.length > 0">
+                        <li v-for="mark in marks" :key="'mark-loc-' + location.id + '-' + mark.id">
+                            <a href="#" @click.prevent="showPopup(mark)">
+                                [{{ getMarkType(mark) }}]
+                                {{ mark.name }}
+                            </a>
+                        </li>
+                    </ul>
+                    <p v-else>There are no markers to display.</p>
                 </div>
             </div>
         </div>
@@ -201,8 +204,8 @@
                     mark: {
                         name: this.createState.name,
                         description: this.createState.description,
-                        lat: this.lat,
-                        long: this.lon,
+                        lat: this.coordinates[1],
+                        long: this.coordinates[0],
                         location_id: parseInt(this.id),
                         mark_type_id: this.createState.markTypeId
                     }
@@ -368,6 +371,7 @@
 
                             this._content.innerHTML = `<strong>Name: </strong> ${this.escape(mark.name)}<br><strong>Type: </strong>${this.escape(this.getMarkType(mark))}`;
                             this._overlay.setPosition(event.coordinate);
+                            map.setCenter(fromLonLat([mark.long, mark.lat]));
                         } else {
                             this._overlay.setPosition(undefined);
                             closer.blur();
