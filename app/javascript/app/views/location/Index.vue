@@ -158,7 +158,8 @@
                     descriptionState: null,
                     markTypeId: 1
                 },
-                bsMarkTypes: null /* our state is so large :( */
+                bsMarkTypes: null, /* our state is so large :( */
+                markerId: this.$route.params.markerId || null
             }
         },
         computed: {
@@ -224,13 +225,14 @@
                         console.log(error);
                     });
             },
-
             escape(str) {
                 // https://stackoverflow.com/q/5499078
                 return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
             },
             showPopup(m) {
                 this._content.innerHTML = `<strong>Name: </strong> ${this.escape(m.name)}<br><strong>Type: </strong>${this.escape(this.getMarkType(m))}`;
+                this.map.getView().setCenter(fromLonLat([m.long, m.lat]));
+                this.map.getView().setZoom(18);
                 this._overlay.setPosition(fromLonLat([m.long, m.lat]));
             },
             getMarkType(m) {
@@ -264,6 +266,21 @@
 
                     feature.setStyle(style);
                     source.addFeature(feature);
+                }
+
+                if (this.markerId !== null) {
+                    let m = this.marks.find(x => x.id == this.markerId);
+                    if (typeof m !== 'undefined') {
+                        this.map.getView().setCenter(fromLonLat([m.long, m.lat]));
+                        this.map.getView().setZoom(18);
+
+                        this._content.innerHTML = `<strong>Name: </strong> ${this.escape(m.name)}<br><strong>Type: </strong>${this.escape(this.getMarkType(m))}`;
+                        try {
+                            this._overlay.setPosition(fromLonLat([m.long, m.lat]));
+                        } catch {} // why does this error????
+                    }
+
+                    this.markerId = null;
                 }
             },
             setupMap() {
@@ -360,7 +377,7 @@
                         return false;
                     };
 
-                    map.on('singleclick',   (event) => {
+                    map.on('singleclick', (event) => {
                         let feature = map.forEachFeatureAtPixel(event.pixel,
                             function (feature) {
                                 return feature;
@@ -371,7 +388,6 @@
 
                             this._content.innerHTML = `<strong>Name: </strong> ${this.escape(mark.name)}<br><strong>Type: </strong>${this.escape(this.getMarkType(mark))}`;
                             this._overlay.setPosition(event.coordinate);
-                            map.setCenter(fromLonLat([mark.long, mark.lat]));
                         } else {
                             this._overlay.setPosition(undefined);
                             closer.blur();
@@ -422,9 +438,9 @@
                     this.loading = false;
 
                     setTimeout(() => {
-                        this.$nextTick(() => {
-                            this.setupMap();
-                        });
+                            this.$nextTick(() => {
+                                this.setupMap();
+                            });
                     }, 50);
                 });
         },

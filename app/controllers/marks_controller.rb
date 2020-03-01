@@ -4,16 +4,19 @@ class MarksController < ApplicationController
   # GET /marks
   # GET /marks.json
   def index
+    @marks = Mark.order(mark_type_id: "desc").order(name: "asc").all
     if params[:location_id]
-      @marks = Mark.where(location_id: params[:location_id])
-     else
-    @marks = Mark.all
-      end
+      @marks = @marks.where(location_id: params[:location_id])
+    end
+    if params[:mark_type_id]
+      @marks = @marks.where(mark_type_id: params[:mark_type_id])
+    end
   end
 
   # GET /marks/1
   # GET /marks/1.json
   def show
+    @mark = Mark.order(mark_type_id: "desc").order(name: "asc")
   end
 
   # GET /marks/new

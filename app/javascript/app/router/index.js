@@ -10,7 +10,7 @@ import LocationNew from '../../app/views/location/New.vue';
 const routes = [
     { path: '/', component: Home },
     { path: '/location/new', component: LocationNew },
-    { path: '/location/:id', component: LocationIndex },
+    { path: '/location/:id/:markerId?', component: LocationIndex },
 ];
 
 export default new VueRouter({

@@ -55,7 +55,7 @@
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
             <%# The rails administration panel link %>
             <% if Rails.env.development? %>
-              <%= link_to 'Rails Admin', rails_admin_path, class: "dropdown-item" %>
+              <%= link_to 'Rails Admin', rails_admin_path, target: "_blank", ref: "noopener", class: "dropdown-item" %>
               <div class="dropdown-divider"></div>
             <% end %>
             <%# Devise requires that the logout command be sent using the 'delete' HTTP verb (method) %>
