@@ -7,11 +7,18 @@ class LocationsController < ApplicationController
     @locations = Location.all
   end
 
+  def search
+    @locations = if params[:search_term]
+      Location.search(params[:search_term])
+                 else
+      Location.all
+                 end
+    end
+
   # GET /locations/1
   # GET /locations/1.json
   def show
   end
-
   # GET /locations/new
   def new
     @location = Location.new
@@ -69,6 +76,8 @@ class LocationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def location_params
-      params.require(:location).permit(:name, :description, :lat, :lat, :long, :radius, :user_id)
+      prompt = params.require(:location).permit(:name, :description, :lat, :lat, :long, :radius, :user_id, :search_term)
+      prompt[:location][:user_id] = current_user.id
+      prompt
     end
 end
