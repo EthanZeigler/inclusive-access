@@ -4,7 +4,11 @@ class MarksController < ApplicationController
   # GET /marks
   # GET /marks.json
   def index
+    if params[:location_id]
+      @marks = Mark.where(location_id: params[:location_id])
+     else
     @marks = Mark.all
+      end
   end
 
   # GET /marks/1
