@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_01_003032) do
+ActiveRecord::Schema.define(version: 2020_03_01_045325) do
 
   create_table "locations", force: :cascade do |t|
     t.string "name"
@@ -37,8 +37,10 @@ ActiveRecord::Schema.define(version: 2020_03_01_003032) do
     t.decimal "lat"
     t.decimal "long"
     t.integer "user_id", null: false
+    t.integer "location_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["location_id"], name: "index_marks_on_location_id"
     t.index ["mark_type_id"], name: "index_marks_on_mark_type_id"
     t.index ["user_id"], name: "index_marks_on_user_id"
   end
@@ -57,6 +59,7 @@ ActiveRecord::Schema.define(version: 2020_03_01_003032) do
   end
 
   add_foreign_key "locations", "users"
+  add_foreign_key "marks", "locations"
   add_foreign_key "marks", "mark_types"
   add_foreign_key "marks", "users"
 end

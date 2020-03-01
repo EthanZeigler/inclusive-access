@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid pt-4">
-        <div class="row" v-if="!loading">
+        <div class="row" v-if="!loading && markTypes !== null && marks !== null">
             <div class="col-md-9 pl-4">
                 <div id="map-loc" class="shadow"></div>
             </div>
@@ -34,15 +34,18 @@
     import {OSM, Vector as VectorSource} from 'ol/source.js';
     import {Feature} from "ol";
     import Circle from "ol/geom/Circle";
+    import axios from "axios";
+    import Point from "ol/geom/Point";
 
     export default {
         data() {
             return {
-                lon: null,
-                lat: null,
-                radius: null,
+                coordinates: null,
+                loading: true,
+                markTypes: null,
                 location: null,
-                loading: true
+                marks: null,
+                map: null
             }
         },
         computed: {
@@ -51,8 +54,7 @@
             }
         },
         methods: {
-            setupMap()
-            {
+            setupMap() {
                 var raster = new TileLayer({
                     source: new OSM()
                 });
@@ -73,29 +75,22 @@
                 });
 
                 if (this.isUserLoggedIn()) {
-                    var draw; // global so we can remove it later
-                    function addInteraction() {
-                        var geometryFunction;
-                        draw = new Draw({
-                            source: source,
-                            type: 'Circle',
-                            geometryFunction: geometryFunction
-                        });
-                        map.addInteraction(draw);
-                    }
-
-                    addInteraction();
+                    let draw = new Draw({
+                        source: source,
+                        type: "Point"
+                    });
+                    map.addInteraction(draw);
 
                     draw.on('drawend', async () => {
                         /*
-                     WARNING: HACK!!!!!!!!!!!
-                     BAD HACK!!!!!!!!!!!!!!!!
-                     BAD!!!!!!!!!!!!!!!!!!!!!
-                     NOT GOOD!!!!!!!!!!!!!!!!
+                         WARNING: HACK!!!!!!!!!!!
+                         BAD HACK!!!!!!!!!!!!!!!!
+                         BAD!!!!!!!!!!!!!!!!!!!!!
+                         NOT GOOD!!!!!!!!!!!!!!!!
 
-                     Seemingly, drawend is fired before the feature array is updated.
-                     We have to wait for a change, probably. So let's do that. Probably.
-                    */
+                         Seemingly, drawend is fired before the feature array is updated.
+                         We have to wait for a change, probably. So let's do that. Probably.
+                        */
 
                         // Save the current feature array length
                         let cur = vector.getSource().getFeatures().length;
@@ -103,38 +98,63 @@
                         let tries = 0;
                         // Has the length changed yet?
                         while (vector.getSource().getFeatures().length === cur &&
-                        tries <= 40 /* 40*25=1000; 1s */) {
+                            tries <= 40 /* 40*25=1000; 1s */) {
                             await new Promise(r => setTimeout(r, 25));
                             tries++;
-                            console.log(tries);
                         }
 
                         let features = vector.getSource().getFeatures();
                         let feature = features[features.length - 1];
                         console.log(feature);
-                        console.log(feature.values_.geometry);
 
-                        let radius = feature.values_.geometry.getRadius();
-                        let center = feature.values_.geometry.transform('EPSG:3857', 'EPSG:4326').getCenter();
-                        let lon = center[0];
-                        let lat = center[1];
+                        this.coordinates = JSON.parse(JSON.stringify(feature.values_.geometry.transform('EPSG:3857', 'EPSG:4326').getCoordinates()));
 
-                        console.log("lon: " + lon);
-                        console.log("lat: " + lat);
-                        console.log("radius: " + radius);
+                        console.log(vector);
+                        source.removeFeature(feature);
                     });
                 }
 
                 let coordinate = fromLonLat([this.lon, this.lat]);
                 source.addFeature(new Feature(new Circle(coordinate, this.radius)));
+
+                (async () => {
+                    while (this.marks === null) {
+                        await new Promise(r => setTimeout(r, 25));
+                    }
+                    console.log('bruh');
+                    for (let i = 0; i < this.marks.length; i++) {
+                        let mark = this.marks[i];
+
+                        let coordinate = fromLonLat(mark.long, mark.lat);
+                        console.log(coordinate);
+                        source.addFeature(new Feature(new Point(coordinate)));
+                    }
+                })();
             }
         },
         mounted() {
-            fetch('/locations/' + this.id + '.json')
+            axios.get('/marks.json?location_id=' + this.id)
                 .then((response) => {
-                    return response.json();
+                    this.marks = response.data;
                 })
-                .then((data) => {
+                .catch((error) => {
+                    alert('Unable to fetch mark types :(');
+                    console.log(error);
+                });
+
+            axios.get('/mark_types.json')
+                .then((response) => {
+                    this.markTypes = response.data;
+                })
+                .catch((error) => {
+                    alert('Unable to fetch mark types :(');
+                    console.log(error);
+                });
+
+            axios.get('/locations/' + this.id + '.json')
+                .then((response) => {
+                    let data = response.data;
+
                     this.location = data;
 
                     this.lon = parseFloat(data.long);
@@ -142,7 +162,6 @@
                     this.radius = parseFloat(data.radius);
 
                     this.loading = false;
-
 
                     this.$nextTick(() => {
                         this.setupMap();

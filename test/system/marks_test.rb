@@ -16,6 +16,7 @@ class MarksTest < ApplicationSystemTestCase
 
     fill_in "Description", with: @mark.description
     fill_in "Lat", with: @mark.lat
+    fill_in "Location", with: @mark.location_id
     fill_in "Long", with: @mark.long
     fill_in "Mark type", with: @mark.mark_type_id
     fill_in "Name", with: @mark.name
@@ -32,6 +33,7 @@ class MarksTest < ApplicationSystemTestCase
 
     fill_in "Description", with: @mark.description
     fill_in "Lat", with: @mark.lat
+    fill_in "Location", with: @mark.location_id
     fill_in "Long", with: @mark.long
     fill_in "Mark type", with: @mark.mark_type_id
     fill_in "Name", with: @mark.name

@@ -12,6 +12,8 @@
 <script>
     import 'ol/ol.css';
 
+    import axios from 'axios';
+
     import {fromLonLat} from 'ol/proj';
     import Map from 'ol/Map.js';
     import View from 'ol/View.js';
@@ -66,14 +68,15 @@
             }
         },
         mounted() {
-            fetch('/locations.json')
+            axios.get('/locations.json')
                 .then((response) => {
-                    return response.json();
-                })
-                .then((data) => {
-                    this.locations = data;
+                    this.locations = response.data;
 
                     this.setupMap();
+                })
+                .catch((error) => {
+                    alert('Unable to fetch locations :(');
+                    console.log(error);
                 });
         }
     }
