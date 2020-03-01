@@ -12,11 +12,6 @@ import router from '../app/router';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import { BootstrapVue } from 'bootstrap-vue';
-
-import VueLayers from 'vuelayers';
-import 'vuelayers/lib/style.css';
-
-Vue.use(VueLayers);
 Vue.use(BootstrapVue);
 
 Vue.prototype.isUserLoggedIn = () => {
