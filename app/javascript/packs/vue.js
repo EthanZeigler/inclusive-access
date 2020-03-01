@@ -19,6 +19,10 @@ import 'vuelayers/lib/style.css';
 Vue.use(VueLayers);
 Vue.use(BootstrapVue);
 
+Vue.prototype.isUserLoggedIn = () => {
+    return document.head.querySelector("meta[name='user-logged-in']").content === 'true';
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app-spa') !== null) {
         const app = new Vue({

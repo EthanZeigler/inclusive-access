@@ -1,8 +1,12 @@
 <template>
     <div class="pt-4">
-        <p>To create a location, click the center of the target, and then move your mouse to create a circle.</p>
+        <div class="container">
+            <p>To create a location, click the center of the target, and then move your mouse to create a circle.</p>
+        </div>
 
-        <div id="map"></div>
+        <div class="px-4">
+            <div id="map-loc-new" class="shadow"></div>
+        </div>
 
         <b-modal ref="createModal"
                  title="Create Location"
@@ -47,8 +51,8 @@
     </div>
 </template>
 <style>
-    #map {
-        height: calc(100vh - 200px);
+    #map-loc-new {
+        height: calc(100vh - 150px);
     }
 </style>
 
@@ -159,7 +163,7 @@
 
             var map = new Map({
                 layers: [raster, vector],
-                target: 'map',
+                target: 'map-loc-new',
                 view: new View({
                     center: [-11000000, 4600000],
                     zoom: 4

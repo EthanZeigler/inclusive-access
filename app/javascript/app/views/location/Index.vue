@@ -1,11 +1,25 @@
 <template>
-    <div class="pt-4">
-        <div id="map"></div>
+    <div class="container-fluid pt-4">
+        <div class="row" v-if="!loading">
+            <div class="col-md-9 pl-4">
+                <div id="map-loc" class="shadow"></div>
+            </div>
+            <div class="col-md-3">
+                <h4>{{ location.name }}</h4>
+                <p class="mb-5">{{ location.description }}</p>
+
+                <h5>Markers</h5>
+                <p>i have not implemented this yet leave me alone</p>
+            </div>
+        </div>
+        <div class="container" v-else>
+            <strong>Loading location...</strong>
+        </div>
     </div>
 </template>
 <style>
-    #map {
-        height: calc(100vh - 200px);
+    #map-loc {
+        height: calc(100vh - 150px);
     }
 </style>
 
@@ -24,9 +38,11 @@
     export default {
         data() {
             return {
-                lat: null,
                 lon: null,
+                lat: null,
                 radius: null,
+                location: null,
+                loading: true
             }
         },
         computed: {
@@ -49,28 +65,29 @@
 
                 var map = new Map({
                     layers: [raster, vector],
-                    target: 'map',
+                    target: 'map-loc',
                     view: new View({
                         center: fromLonLat([this.lon, this.lat]),
                         zoom: 16
                     })
                 });
 
-                var draw; // global so we can remove it later
-                function addInteraction() {
-                    var geometryFunction;
-                    draw = new Draw({
-                        source: source,
-                        type: 'Circle',
-                        geometryFunction: geometryFunction
-                    });
-                    map.addInteraction(draw);
-                }
+                if (this.isUserLoggedIn()) {
+                    var draw; // global so we can remove it later
+                    function addInteraction() {
+                        var geometryFunction;
+                        draw = new Draw({
+                            source: source,
+                            type: 'Circle',
+                            geometryFunction: geometryFunction
+                        });
+                        map.addInteraction(draw);
+                    }
 
-                addInteraction();
+                    addInteraction();
 
-                draw.on('drawend', async () => {
-                    /*
+                    draw.on('drawend', async () => {
+                        /*
                      WARNING: HACK!!!!!!!!!!!
                      BAD HACK!!!!!!!!!!!!!!!!
                      BAD!!!!!!!!!!!!!!!!!!!!!
@@ -80,32 +97,33 @@
                      We have to wait for a change, probably. So let's do that. Probably.
                     */
 
-                    // Save the current feature array length
-                    let cur = vector.getSource().getFeatures().length;
+                        // Save the current feature array length
+                        let cur = vector.getSource().getFeatures().length;
 
-                    let tries = 0;
-                    // Has the length changed yet?
-                    while (vector.getSource().getFeatures().length === cur &&
-                    tries <= 40 /* 40*25=1000; 1s */) {
-                        await new Promise(r => setTimeout(r, 25));
-                        tries++;
-                        console.log(tries);
-                    }
+                        let tries = 0;
+                        // Has the length changed yet?
+                        while (vector.getSource().getFeatures().length === cur &&
+                        tries <= 40 /* 40*25=1000; 1s */) {
+                            await new Promise(r => setTimeout(r, 25));
+                            tries++;
+                            console.log(tries);
+                        }
 
-                    let features = vector.getSource().getFeatures();
-                    let feature = features[features.length - 1];
-                    console.log(feature);
-                    console.log(feature.values_.geometry);
+                        let features = vector.getSource().getFeatures();
+                        let feature = features[features.length - 1];
+                        console.log(feature);
+                        console.log(feature.values_.geometry);
 
-                    let radius = feature.values_.geometry.getRadius();
-                    let center = feature.values_.geometry.transform('EPSG:3857', 'EPSG:4326').getCenter();
-                    let lon = center[0];
-                    let lat = center[1];
+                        let radius = feature.values_.geometry.getRadius();
+                        let center = feature.values_.geometry.transform('EPSG:3857', 'EPSG:4326').getCenter();
+                        let lon = center[0];
+                        let lat = center[1];
 
-                    console.log("lon: " + lon);
-                    console.log("lat: " + lat);
-                    console.log("radius: " + radius);
-                });
+                        console.log("lon: " + lon);
+                        console.log("lat: " + lat);
+                        console.log("radius: " + radius);
+                    });
+                }
 
                 let coordinate = fromLonLat([this.lon, this.lat]);
                 source.addFeature(new Feature(new Circle(coordinate, this.radius)));
@@ -117,11 +135,18 @@
                     return response.json();
                 })
                 .then((data) => {
+                    this.location = data;
+
                     this.lon = parseFloat(data.long);
                     this.lat = parseFloat(data.lat);
                     this.radius = parseFloat(data.radius);
 
-                    this.setupMap();
+                    this.loading = false;
+
+
+                    this.$nextTick(() => {
+                        this.setupMap();
+                    });
                 });
         }
     }
