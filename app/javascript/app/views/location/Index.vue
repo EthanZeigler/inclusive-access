@@ -10,7 +10,7 @@
 
                 <h5>Markers</h5>
                 <p v-if="loggedIn"><a href="#" @click.prevent="editing = !editing">{{ editing ? "Stop Editing" : "Edit Markers" }}</a></p>
-                <p v-else>Log in to add points.</p>
+                <p v-else>Log in to add markers to the map.</p>
 
                 <div v-if="!editing">
                     <p v-for="mark in marks" :key="'mark-loc-' + location.id + '-' + mark.id">
@@ -25,6 +25,41 @@
         <div class="container" v-else>
             <strong>Loading location...</strong>
         </div>
+
+        <b-modal ref="createModal"
+                 title="Create Marker"
+                 @show="resetModal"
+                 @hidden="resetModal"
+                 @ok="handleOk"
+                 ok-title="Create"
+                 :no-close-on-backdrop="true"
+                 :no-close-on-esc="true"
+                 v-if="bsMarkTypes !== null"
+        >
+            <form ref="form"
+                  @submit.stop.prevent="handleSubmit"
+            >
+                <b-form-group
+                        :state="createState.nameState"
+                        label="Name"
+                        label-for="name-input"
+                        invalid-feedback="Name is required"
+                >
+                    <b-form-input
+                            id="name-input"
+                            v-model="createState.name"
+                            :state="createState.nameState"
+                            required
+                    />
+                </b-form-group>
+                <b-form-group
+                        label="Marker Type"
+                        label-for="mark-type-select"
+                >
+                    <b-form-select id="mark-type-select" v-model="createState.markTypeId" :options="bsMarkTypes"></b-form-select>
+                </b-form-group>
+            </form>
+        </b-modal>
     </div>
 </template>
 <style>
@@ -112,7 +147,15 @@
                 _overlay: null,
                 _content: null,
                 editing: false,
-                loggedIn: this.isUserLoggedIn()
+                loggedIn: this.isUserLoggedIn(),
+                createState: {
+                    name: '',
+                    nameState: null,
+                    description: '',
+                    descriptionState: null,
+                    markTypeId: 1
+                },
+                bsMarkTypes: null /* our state is so large :( */
             }
         },
         computed: {
@@ -121,6 +164,64 @@
             }
         },
         methods: {
+            checkFormValidity() {
+                const valid = this.$refs.form.checkValidity();
+
+                if (this.createState.name.trim().length < 3)
+                    this.createState.nameState = false;
+                else
+                    this.createState.nameState = null;
+
+                if (this.createState.description.trim().length < 1)
+                    this.createState.descriptionState = false;
+                else
+                    this.createState.descriptionState = null;
+
+                return valid;
+            },
+            resetModal() {
+                this.createState.name = '';
+                this.createState.nameState = null;
+                this.createState.description = '';
+                this.createState.descriptionState = null;
+            },
+            handleOk(bvModalEvt) {
+                bvModalEvt.preventDefault();
+
+                this.handleSubmit();
+            },
+            handleSubmit() {
+                // Exit when the form isn't valid
+                if (!this.checkFormValidity()) {
+                    return;
+                }
+
+                let fields = {
+                    authenticity_token: document.head.querySelector("meta[name='csrf-token']").content,
+                    mark: {
+                        name: this.createState.name,
+                        description: this.createState.description,
+                        lat: this.lat,
+                        long: this.lon,
+                        location_id: parseInt(this.id),
+                        mark_type_id: this.createState.markTypeId
+                    }
+                };
+
+                axios.post('/marks.json', fields)
+                    .then((response) => {
+                        this.marks.push(response.data);
+
+                        this.$nextTick(() => {
+                            this.$refs.createModal.hide();
+                        });
+                    })
+                    .catch((error) => {
+                        alert("There was an error. :(");
+                        console.log(error);
+                    });
+            },
+
             escape(str) {
                 // https://stackoverflow.com/q/5499078
                 return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -141,7 +242,7 @@
 
                     let coordinate = fromLonLat([mark.long, mark.lat]);
 
-                    var feature = new Feature({
+                    let feature = new Feature({
                         geometry: new Point(coordinate),
                         name: mark.name,
                     });
@@ -149,7 +250,7 @@
                     feature.set('name', name);
                     feature.set('mark', mark);
 
-                    var style = new Style({
+                    let style = new Style({
                         image: new Icon({
                             anchor: [0.5, 46],
                             anchorXUnits: 'fraction',
@@ -163,17 +264,17 @@
                 }
             },
             setupMap() {
-                var raster = new TileLayer({
+                let raster = new TileLayer({
                     source: new OSM()
                 });
 
-                var source = new VectorSource({wrapX: false});
+                let source = new VectorSource({wrapX: false});
 
-                var vector = new VectorLayer({
+                let vector = new VectorLayer({
                     source: source
                 });
 
-                var map = new Map({
+                let map = new Map({
                     layers: [raster, vector],
                     target: 'map-loc',
                     view: new View({
@@ -223,6 +324,8 @@
                             this.coordinates = JSON.parse(JSON.stringify(feature.values_.geometry.transform('EPSG:3857', 'EPSG:4326').getCoordinates()));
 
                             source.removeFeature(feature);
+
+                            this.$refs.createModal.show();
                         });
                     }
                 } else {
@@ -230,14 +333,14 @@
                         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                         <div id="popup-content"></div>
                     </div>`;
-                    var template = document.createElement('template');
+                    let template = document.createElement('template');
                     template.innerHTML = popupHtml;
                     document.getElementById('map-container').appendChild(template.content.firstChild);
 
                     // https://openstreetmap.be/en/projects/howto/openlayers.html
-                    var container = document.getElementById('popup');
+                    let container = document.getElementById('popup');
                     this._content = document.getElementById('popup-content');
-                    var closer = document.getElementById('popup-closer');
+                    let closer = document.getElementById('popup-closer');
 
                     this._overlay = new Overlay({
                         element: container,
@@ -255,7 +358,7 @@
                     };
 
                     map.on('singleclick',   (event) => {
-                        var feature = map.forEachFeatureAtPixel(event.pixel,
+                        let feature = map.forEachFeatureAtPixel(event.pixel,
                             function (feature) {
                                 return feature;
                             });
@@ -288,6 +391,14 @@
             axios.get('/mark_types.json')
                 .then((response) => {
                     this.markTypes = response.data;
+                    let types = [];
+
+                    for (let i = 0; i < this.markTypes.length; i++) {
+                        let mt = this.markTypes[i];
+                        types.push({ value: mt.id, text: mt.name });
+                    }
+
+                    this.bsMarkTypes = types;
                 })
                 .catch((error) => {
                     alert('Unable to fetch mark types :(');
