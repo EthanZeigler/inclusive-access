@@ -1,0 +1,6 @@
+entrypoint: bundle exec rails server --port $PORT
+env: flex
+runtime: ruby
+
+env_variables:
+  SECRET_KEY_BASE: ab3f43f7b209cbd490bbf473a861fb438d22a44248ea487996b49e1338ea7552496961443d3ddcdf0ee045ef3c8faebc619ad60ae1ff08c68f67e41b68334a0a
