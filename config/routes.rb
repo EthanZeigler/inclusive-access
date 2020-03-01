@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :marks
+  resources :mark_types
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   resources :locations
   devise_for :users

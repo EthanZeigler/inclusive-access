@@ -1,10 +1,10 @@
-<%= form_with(model: location, local: true) do |form| %>
-  <% if location.errors.any? %>
+<%= form_with(model: mark, local: true) do |form| %>
+  <% if mark.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(location.errors.count, "error") %> prohibited this location from being saved:</h2>
+      <h2><%= pluralize(mark.errors.count, "error") %> prohibited this mark from being saved:</h2>
 
       <ul>
-        <% location.errors.full_messages.each do |message| %>
+        <% mark.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
@@ -14,6 +14,11 @@
   <div class="field">
     <%= form.label :name %>
     <%= form.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :mark_type_id %>
+    <%= form.text_field :mark_type_id %>
   </div>
 
   <div class="field">
@@ -29,11 +34,6 @@
   <div class="field">
     <%= form.label :long %>
     <%= form.text_field :long %>
-  </div>
-
-  <div class="field">
-    <%= form.label :radius %>
-    <%= form.number_field :radius %>
   </div>
 
   <div class="field">

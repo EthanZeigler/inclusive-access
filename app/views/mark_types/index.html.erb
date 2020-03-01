@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Mark Types</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @mark_types.each do |mark_type| %>
+      <tr>
+        <td><%= mark_type.name %></td>
+        <td><%= link_to 'Show', mark_type %></td>
+        <td><%= link_to 'Edit', edit_mark_type_path(mark_type) %></td>
+        <td><%= link_to 'Destroy', mark_type, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Mark Type', new_mark_type_path %>
