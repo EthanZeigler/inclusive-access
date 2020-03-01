@@ -129,7 +129,6 @@
 
                 axios.post('/locations.json', fields)
                     .then((response) => {
-                        console.log(response.data);
                         this.$nextTick(() => {
                             this.$refs.createModal.hide();
                             this.$router.push('/location/' + response.data.id);
@@ -203,22 +202,15 @@
                     tries <= 40 /* 40*25=1000; 1s */) {
                     await new Promise(r => setTimeout(r, 25));
                     tries++;
-                    console.log(tries);
                 }
 
                 let features = vector.getSource().getFeatures();
                 let feature = features[features.length - 1];
-                console.log(feature);
-                console.log(feature.values_.geometry);
 
                 let radius = feature.values_.geometry.getRadius();
                 let center = feature.values_.geometry.transform('EPSG:3857', 'EPSG:4326').getCenter();
                 let lon = center[0];
                 let lat = center[1];
-
-                console.log("lon: " + lon);
-                console.log("lat: " + lat);
-                console.log("radius: " + radius);
 
                 this.lon = lon;
                 this.lat = lat;
